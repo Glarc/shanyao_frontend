@@ -1,2 +1,97 @@
 <!--pages/student/home/home.wxml-->
-<text>pages/student/home/home.wxml</text>
+<view class="page">
+  <!-- 顶部用户信息区 -->
+  <view class="header">
+    <view class="user-info">
+      <image class="avatar animate-fade-in" src="{{userInfo.avatar || '/assets/default-avatar.png'}}" mode="aspectFill"></image>
+      <view class="user-text">
+        <text class="username">{{userInfo.name || '同学'}}</text>
+        <text class="user-desc">今天也要加油哦 💪</text>
+      </view>
+    </view>
+    <view class="points-badge animate-bounce">
+      <text class="points-num">{{userInfo.points || 0}}</text>
+      <text class="points-label">积分</text>
+    </view>
+  </view>
+
+  <!-- 今日评价卡片 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">今日评价</text>
+      <text class="section-more" bindtap="goToHistory">查看历史 ›</text>
+    </view>
+    
+    <view class="today-card animate-slide-up" wx:if="{{todayEvaluation}}">
+      <view class="today-header">
+        <text class="today-course">{{todayEvaluation.course}}</text>
+        <view class="score-badge {{todayEvaluation.score >= 90 ? 'excellent' : todayEvaluation.score >= 80 ? 'good' : 'normal'}}">
+          <text class="score-text">{{todayEvaluation.score}}</text>
+        </view>
+      </view>
+      <text class="today-comment">{{todayEvaluation.comment}}</text>
+      <view class="today-footer">
+        <text class="today-teacher">{{todayEvaluation.teacher}} 老师</text>
+        <text class="today-time">{{todayEvaluation.time}}</text>
+      </view>
+    </view>
+
+    <view class="empty-card animate-fade-in" wx:else>
+      <image class="empty-icon" src="/assets/empty-evaluation.png" mode="aspectFit"></image>
+      <text class="empty-text">今天还没有评价哦</text>
+    </view>
+  </view>
+
+  <!-- 成长数据 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">成长数据</text>
+    </view>
+    
+    <view class="stats-grid">
+      <view class="stat-item animate-scale" wx:for="{{stats}}" wx:key="index" style="animation-delay: {{index * 0.1}}s">
+        <view class="stat-icon-wrapper {{item.color}}">
+          <text class="stat-icon">{{item.icon}}</text>
+        </view>
+        <text class="stat-value">{{item.value}}</text>
+        <text class="stat-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近照片 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">最近照片</text>
+      <text class="section-more" bindtap="goToPhotos">查看全部 ›</text>
+    </view>
+    
+    <scroll-view class="photos-scroll" scroll-x>
+      <view class="photo-item animate-fade-in" wx:for="{{recentPhotos}}" wx:key="index" bindtap="previewPhoto" data-url="{{item.url}}">
+        <image class="photo-img" src="{{item.url}}" mode="aspectFill"></image>
+        <view class="photo-mask">
+          <text class="photo-date">{{item.date}}</text>
+        </view>
+      </view>
+      <view class="photo-item photo-placeholder" wx:if="{{!recentPhotos || recentPhotos.length === 0}}">
+        <text class="photo-placeholder-text">暂无照片</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 快捷功能 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">快捷功能</text>
+    </view>
+    
+    <view class="quick-actions">
+      <view class="action-btn animate-bounce" wx:for="{{quickActions}}" wx:key="index" style="animation-delay: {{index * 0.1}}s" bindtap="handleAction" data-action="{{item.action}}">
+        <view class="action-icon-bg {{item.color}}">
+          <text class="action-icon">{{item.icon}}</text>
+        </view>
+        <text class="action-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,2 +1,136 @@
 <!--pages/parent/home/home.wxml-->
-<text>pages/parent/home/home.wxml</text>
+<view class="page">
+  <!-- 顶部家长信息 -->
+  <view class="header">
+    <view class="parent-info">
+      <image class="avatar animate-fade-in" src="{{parentInfo.avatar || '/assets/default-avatar.png'}}" mode="aspectFill"></image>
+      <view class="parent-text">
+        <text class="parent-name">{{parentInfo.name || '家长'}}，您好</text>
+        <text class="parent-desc">{{childInfo.name}} 今天表现很棒 ✨</text>
+      </view>
+    </view>
+    <view class="switch-child" bindtap="switchChild">
+      <text class="switch-icon">👨‍👩‍👧‍👦</text>
+    </view>
+  </view>
+
+  <!-- 孩子信息卡片 -->
+  <view class="child-card animate-slide-up">
+    <view class="child-header">
+      <view class="child-info">
+        <image class="child-avatar" src="{{childInfo.avatar || '/assets/default-avatar.png'}}" mode="aspectFill"></image>
+        <view class="child-details">
+          <text class="child-name">{{childInfo.name}}</text>
+          <text class="child-class">{{childInfo.className}}</text>
+        </view>
+      </view>
+      <view class="child-score-badge">
+        <text class="score-label">本周表现</text>
+        <text class="score-value">{{childInfo.weekScore}}</text>
+      </view>
+    </view>
+    
+    <view class="child-stats">
+      <view class="child-stat-item" wx:for="{{childStats}}" wx:key="label">
+        <text class="stat-icon">{{item.icon}}</text>
+        <text class="stat-value">{{item.value}}</text>
+        <text class="stat-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日评价 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">今日评价</text>
+      <text class="section-more" bindtap="viewAllEvaluations">查看全部 ›</text>
+    </view>
+    
+    <view class="evaluation-card animate-slide-up" wx:if="{{todayEvaluations && todayEvaluations.length > 0}}">
+      <view class="evaluation-item" wx:for="{{todayEvaluations}}" wx:key="id">
+        <view class="eval-header">
+          <view class="eval-course-info">
+            <text class="eval-course">{{item.course}}</text>
+            <text class="eval-time">{{item.time}}</text>
+          </view>
+          <view class="eval-score {{item.score >= 90 ? 'excellent' : item.score >= 80 ? 'good' : 'normal'}}">
+            <text class="eval-score-num">{{item.score}}</text>
+          </view>
+        </view>
+        <text class="eval-comment">{{item.comment}}</text>
+        <view class="eval-footer">
+          <text class="eval-teacher">{{item.teacher}} 老师</text>
+          <text class="eval-tags" wx:if="{{item.tags}}">{{item.tags}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state animate-fade-in" wx:else>
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">今天还没有评价</text>
+    </view>
+  </view>
+
+  <!-- 成长趋势 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">成长趋势</text>
+      <view class="time-tabs">
+        <text class="time-tab {{trendPeriod === 'week' ? 'active' : ''}}" bindtap="changeTrendPeriod" data-period="week">周</text>
+        <text class="time-tab {{trendPeriod === 'month' ? 'active' : ''}}" bindtap="changeTrendPeriod" data-period="month">月</text>
+      </view>
+    </view>
+    
+    <view class="trend-card animate-scale">
+      <view class="trend-chart">
+        <!-- 简单的趋势图表示 -->
+        <view class="chart-bars">
+          <view class="chart-bar" wx:for="{{trendData}}" wx:key="date" style="height: {{item.score}}%">
+            <view class="bar-fill"></view>
+            <text class="bar-label">{{item.label}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="trend-summary">
+        <text class="trend-text">近{{trendPeriod === 'week' ? '一周' : '一月'}}平均分：</text>
+        <text class="trend-avg">{{averageScore}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最新照片 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">最新照片</text>
+      <text class="section-more" bindtap="viewAllPhotos">查看全部 ›</text>
+    </view>
+    
+    <view class="photos-grid animate-fade-in">
+      <view class="photo-item" wx:for="{{recentPhotos}}" wx:key="id" bindtap="previewPhoto" data-index="{{index}}">
+        <image class="photo-img" src="{{item.url}}" mode="aspectFill"></image>
+        <view class="photo-info">
+          <text class="photo-date">{{item.date}}</text>
+        </view>
+      </view>
+      <view class="photo-item photo-placeholder" wx:if="{{!recentPhotos || recentPhotos.length === 0}}">
+        <text class="photo-placeholder-icon">📷</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷功能 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">快捷功能</text>
+    </view>
+    
+    <view class="quick-actions">
+      <view class="quick-btn animate-bounce" wx:for="{{quickActions}}" wx:key="action" style="animation-delay: {{index * 0.1}}s" bindtap="handleQuickAction" data-action="{{item.action}}">
+        <view class="quick-icon-wrapper {{item.color}}">
+          <text class="quick-icon">{{item.icon}}</text>
+        </view>
+        <text class="quick-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+</view>
