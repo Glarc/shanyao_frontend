@@ -87,7 +87,14 @@ Page({
     const url = e.currentTarget.dataset.url;
     wx.previewImage({
       urls: this.data.recentPhotos.map(p => p.url),
-      current: url
+      current: url,
+      fail: (err) => {
+        wx.showToast({
+          title: '图片加载失败',
+          icon: 'none'
+        });
+        console.error('Preview image failed:', err);
+      }
     });
   },
 

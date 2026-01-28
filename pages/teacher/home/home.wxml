@@ -38,7 +38,7 @@
         </view>
         <text class="class-name">{{item.name}}</text>
         <text class="class-room">{{item.room}}</text>
-        <view class="class-progress" wx:if="{{!item.evaluated}}">
+        <view class="class-progress" wx:if="{{!item.evaluated && item.studentCount > 0}}">
           <view class="progress-bar">
             <view class="progress-fill" style="width: {{item.evaluatedCount / item.studentCount * 100}}%"></view>
           </view>

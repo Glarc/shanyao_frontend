@@ -104,6 +104,10 @@ Page({
    */
   calculateAverage() {
     const scores = this.data.trendData.map(d => d.score);
+    if (scores.length === 0) {
+      this.setData({ averageScore: 0 });
+      return;
+    }
     const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
     this.setData({ averageScore: avg });
   },
@@ -178,7 +182,14 @@ Page({
     const index = e.currentTarget.dataset.index;
     wx.previewImage({
       urls: this.data.recentPhotos.map(p => p.url),
-      current: this.data.recentPhotos[index].url
+      current: this.data.recentPhotos[index].url,
+      fail: (err) => {
+        wx.showToast({
+          title: '图片加载失败',
+          icon: 'none'
+        });
+        console.error('Preview image failed:', err);
+      }
     });
   },
 

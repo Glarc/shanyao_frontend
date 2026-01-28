@@ -10,8 +10,8 @@ Page({
       avatar: ''
     },
     currentDate: {
-      day: '28',
-      month: '1月'
+      day: '',
+      month: ''
     },
     todayClasses: [
       {

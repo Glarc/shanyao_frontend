@@ -66,17 +66,18 @@
       <text class="section-more" bindtap="goToPhotos">查看全部 ›</text>
     </view>
     
-    <scroll-view class="photos-scroll" scroll-x>
+    <scroll-view class="photos-scroll" scroll-x wx:if="{{recentPhotos && recentPhotos.length > 0}}">
       <view class="photo-item animate-fade-in" wx:for="{{recentPhotos}}" wx:key="index" bindtap="previewPhoto" data-url="{{item.url}}">
         <image class="photo-img" src="{{item.url}}" mode="aspectFill"></image>
         <view class="photo-mask">
           <text class="photo-date">{{item.date}}</text>
         </view>
       </view>
-      <view class="photo-item photo-placeholder" wx:if="{{!recentPhotos || recentPhotos.length === 0}}">
-        <text class="photo-placeholder-text">暂无照片</text>
-      </view>
     </scroll-view>
+    <view class="empty-state animate-fade-in" wx:else>
+      <text class="empty-icon">📷</text>
+      <text class="empty-text">暂无照片</text>
+    </view>
   </view>
 
   <!-- 快捷功能 -->
