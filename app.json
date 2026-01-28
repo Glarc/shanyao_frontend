@@ -6,9 +6,11 @@
     "pages/teacher/home/home"
   ],
   "window": {
-    "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "Weixin",
-    "navigationBarBackgroundColor": "#ffffff"
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "闪耀教育",
+    "navigationBarBackgroundColor": "#667eea",
+    "backgroundColor": "#f7f8fa",
+    "backgroundTextStyle": "light"
   },
   "style": "v2",
   "componentFramework": "glass-easel",
