@@ -1,2 +1,96 @@
 <!--pages/teacher/home/home.wxml-->
-<text>pages/teacher/home/home.wxml</text>
+<view class="page">
+  <!-- 顶部教师信息 -->
+  <view class="header">
+    <view class="teacher-info">
+      <image class="avatar animate-fade-in" src="{{teacherInfo.avatar || '/assets/default-avatar.png'}}" mode="aspectFill"></image>
+      <view class="teacher-text">
+        <text class="teacher-name">{{teacherInfo.name || '老师'}}，您好</text>
+        <text class="teacher-desc">今天共有 {{todayClasses.length}} 节课待评价</text>
+      </view>
+    </view>
+    <view class="date-badge animate-bounce">
+      <text class="date-day">{{currentDate.day}}</text>
+      <text class="date-month">{{currentDate.month}}</text>
+    </view>
+  </view>
+
+  <!-- 今日课程列表 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">今日课程</text>
+      <text class="section-count">{{todayClasses.length}} 节</text>
+    </view>
+    
+    <view class="class-list">
+      <view class="class-item animate-slide-up" wx:for="{{todayClasses}}" wx:key="id" style="animation-delay: {{index * 0.1}}s" bindtap="goToEvaluate" data-class-id="{{item.id}}">
+        <view class="class-header">
+          <view class="class-time-box">
+            <text class="class-time">{{item.time}}</text>
+            <view class="status-tag {{item.evaluated ? 'completed' : 'pending'}}">
+              <text class="status-text">{{item.evaluated ? '已评价' : '待评价'}}</text>
+            </view>
+          </view>
+          <view class="class-students-count">
+            <text class="students-num">{{item.studentCount}}</text>
+            <text class="students-label">人</text>
+          </view>
+        </view>
+        <text class="class-name">{{item.name}}</text>
+        <text class="class-room">{{item.room}}</text>
+        <view class="class-progress" wx:if="{{!item.evaluated && item.studentCount > 0}}">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{item.evaluatedCount / item.studentCount * 100}}%"></view>
+          </view>
+          <text class="progress-text">{{item.evaluatedCount}}/{{item.studentCount}}</text>
+        </view>
+      </view>
+
+      <view class="empty-card animate-fade-in" wx:if="{{todayClasses.length === 0}}">
+        <image class="empty-icon" src="/assets/empty-class.png" mode="aspectFit"></image>
+        <text class="empty-text">今天没有课程安排</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快速统计 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">本周统计</text>
+    </view>
+    
+    <view class="stats-grid">
+      <view class="stat-card animate-scale" wx:for="{{weekStats}}" wx:key="label" style="animation-delay: {{index * 0.1}}s">
+        <view class="stat-icon-wrapper {{item.color}}">
+          <text class="stat-icon">{{item.icon}}</text>
+        </view>
+        <view class="stat-content">
+          <text class="stat-value">{{item.value}}</text>
+          <text class="stat-label">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷功能 -->
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">快捷功能</text>
+    </view>
+    
+    <view class="quick-grid">
+      <view class="quick-item animate-bounce" wx:for="{{quickActions}}" wx:key="action" style="animation-delay: {{index * 0.1}}s" bindtap="handleQuickAction" data-action="{{item.action}}">
+        <view class="quick-icon-bg {{item.color}}">
+          <text class="quick-icon">{{item.icon}}</text>
+        </view>
+        <text class="quick-label">{{item.label}}</text>
+        <text class="quick-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 浮动评价按钮 -->
+  <view class="fab animate-bounce" bindtap="quickEvaluate">
+    <text class="fab-icon">✏️</text>
+  </view>
+</view>

@@ -1,1 +1,353 @@
 /* pages/student/home/home.wxss */
+
+/* 页面容器 */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20rpx 32rpx 40rpx;
+  box-sizing: border-box;
+}
+
+/* ========== 顶部用户信息 ========== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0 32rpx;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  border: 4rpx solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.username {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.user-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.points-badge {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  padding: 16rpx 28rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 8rpx 16rpx rgba(0, 0, 0, 0.1);
+}
+
+.points-num {
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.points-label {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 4rpx;
+}
+
+/* ========== 区块样式 ========== */
+.section {
+  margin-bottom: 32rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.section-more {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ========== 今日评价卡片 ========== */
+.today-card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.15);
+}
+
+.today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.today-course {
+  font-size: 32rpx;
+  font-weight: 650;
+  color: #111;
+}
+
+.score-badge {
+  min-width: 80rpx;
+  height: 56rpx;
+  border-radius: 28rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20rpx;
+}
+
+.score-badge.excellent {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.score-badge.good {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.score-badge.normal {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.score-text {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #fff;
+}
+
+.today-comment {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.today-footer {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #eee;
+}
+
+.today-teacher,
+.today-time {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 空状态 */
+.empty-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10rpx);
+  border-radius: 24rpx;
+  padding: 60rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.empty-icon {
+  width: 120rpx;
+  height: 120rpx;
+  opacity: 0.6;
+}
+
+.empty-text {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ========== 成长数据 ========== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16rpx;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10rpx);
+  border-radius: 20rpx;
+  padding: 24rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.stat-icon-wrapper {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4rpx;
+}
+
+.stat-icon-wrapper.purple {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.stat-icon-wrapper.blue {
+  background: linear-gradient(135deg, #96fbc4 0%, #f9f586 100%);
+}
+
+.stat-icon-wrapper.pink {
+  background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+}
+
+.stat-icon-wrapper.orange {
+  background: linear-gradient(135deg, #fdcbf1 0%, #e6dee9 100%);
+}
+
+.stat-icon {
+  font-size: 32rpx;
+}
+
+.stat-value {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 20rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ========== 最近照片 ========== */
+.photos-scroll {
+  white-space: nowrap;
+  display: flex;
+  gap: 16rpx;
+}
+
+.photo-item {
+  display: inline-block;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.15);
+}
+
+.photo-img {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-mask {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  padding: 12rpx;
+}
+
+.photo-date {
+  font-size: 20rpx;
+  color: #fff;
+}
+
+.photo-placeholder {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10rpx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-placeholder-text {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========== 快捷功能 ========== */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20rpx;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.action-icon-bg {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.action-btn:active .action-icon-bg {
+  transform: scale(0.95);
+}
+
+.action-icon-bg.purple {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-icon-bg.blue {
+  background: linear-gradient(135deg, #667eea 0%, #00d2ff 100%);
+}
+
+.action-icon-bg.pink {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.action-icon-bg.green {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.action-icon {
+  font-size: 40rpx;
+  color: #fff;
+}
+
+.action-label {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+}

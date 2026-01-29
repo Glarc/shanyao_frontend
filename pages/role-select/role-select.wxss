@@ -2,14 +2,44 @@
   min-height: 100vh;
   padding: 48rpx 32rpx 24rpx;
   box-sizing: border-box;
-  background: #f7f8fa;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.header { margin-bottom: 32rpx; }
-.title { font-size: 44rpx; font-weight: 700; color: #111; display: block; }
-.subtitle { margin-top: 12rpx; font-size: 26rpx; color: #666; display: block; }
+.header { 
+  margin-bottom: 32rpx;
+  animation: fadeIn 0.8s ease-out;
+}
 
-.cards { display: flex; flex-direction: column; gap: 24rpx; }
+@keyframes fadeIn {
+  from { 
+    opacity: 0;
+    transform: translateY(-20rpx);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title { 
+  font-size: 44rpx; 
+  font-weight: 700; 
+  color: #fff; 
+  display: block; 
+}
+
+.subtitle { 
+  margin-top: 12rpx; 
+  font-size: 26rpx; 
+  color: rgba(255, 255, 255, 0.8); 
+  display: block; 
+}
+
+.cards { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 24rpx; 
+}
 
 .card {
   background: #fff;
@@ -18,16 +48,68 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 8rpx 20rpx rgba(0,0,0,0.06);
+  box-shadow: 0 8rpx 20rpx rgba(0,0,0,0.1);
+  animation: slideUp 0.6s ease-out;
+  animation-fill-mode: both;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.card:active { transform: scale(0.99); }
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
 
-.cardLeft { display: flex; flex-direction: column; gap: 10rpx; }
-.cardTitle { font-size: 34rpx; font-weight: 650; color: #111; }
-.cardDesc { font-size: 26rpx; color: #666; line-height: 1.4; }
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-.arrow { font-size: 44rpx; color: #bbb; }
+.card:active { 
+  transform: scale(0.97);
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.15);
+}
 
-.footer { margin-top: 40rpx; text-align: center; }
-.tip { font-size: 24rpx; color: #999; }
+.cardLeft { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 10rpx; 
+}
+
+.cardTitle { 
+  font-size: 34rpx; 
+  font-weight: 650; 
+  color: #111; 
+}
+
+.cardDesc { 
+  font-size: 26rpx; 
+  color: #666; 
+  line-height: 1.4; 
+}
+
+.arrow { 
+  font-size: 44rpx; 
+  color: #bbb;
+  transition: transform 0.3s;
+}
+
+.card:active .arrow {
+  transform: translateX(8rpx);
+}
+
+.footer { 
+  margin-top: 40rpx; 
+  text-align: center;
+  animation: fadeIn 0.8s ease-out 0.4s;
+  animation-fill-mode: both;
+}
+
+.tip { 
+  font-size: 24rpx; 
+  color: rgba(255, 255, 255, 0.7); 
+}
