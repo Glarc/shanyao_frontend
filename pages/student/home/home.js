@@ -1,6 +1,7 @@
 // pages/student/home/home.js
 const api = require('../../../utils/api.js')
 const config = require('../../../utils/config.js')
+const util = require('../../../utils/util.js')
 
 Page({
 
@@ -104,7 +105,7 @@ Page({
               score: evaluation.score,
               comment: evaluation.content,
               teacher: '老师',
-              time: this.formatTime(evaluation.created_at)
+              time: util.formatTimeOnly(evaluation.created_at)
             }
           })
         }
@@ -121,14 +122,15 @@ Page({
     const studentId = this.data.userInfo.id
     if (!studentId) return
     
-    const today = this.formatDate(new Date())
+    const today = util.formatDate(new Date())
     
     api.getParentStudentPhotos(studentId, today)
       .then(photos => {
-        if (photos && photos.length > 0) {
+        // 检查photos是否为数组
+        if (photos && Array.isArray(photos) && photos.length > 0) {
           const recentPhotos = photos.slice(0, 4).map(photo => ({
             url: photo.url,
-            date: this.formatDateShort(photo.photo_date)
+            date: util.formatDateShort(photo.photo_date)
           }))
           
           this.setData({ recentPhotos })
@@ -137,37 +139,6 @@ Page({
       .catch(err => {
         console.error('加载照片失败', err)
       })
-  },
-
-  /**
-   * 格式化时间
-   */
-  formatTime(datetime) {
-    if (!datetime) return ''
-    const date = new Date(datetime)
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
-  },
-
-  /**
-   * 格式化日期为 YYYY-MM-DD
-   */
-  formatDate(date) {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  },
-
-  /**
-   * 格式化日期为短格式 MM-DD
-   */
-  formatDateShort(dateStr) {
-    if (!dateStr) return ''
-    const parts = dateStr.split('-')
-    if (parts.length >= 3) {
-      return `${parts[1]}-${parts[2]}`
-    }
-    return dateStr
   },
 
   /**

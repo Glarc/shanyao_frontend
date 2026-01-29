@@ -60,11 +60,11 @@ function request(options) {
             wx.reLaunch({
               url: '/pages/index/index'
             })
-          }, 1500)
+          }, 800)
           reject(new Error('未授权'))
         } else {
           // 其他错误
-          const errorMsg = res.data?.message || `请求失败: ${res.statusCode}`
+          const errorMsg = res.data && res.data.message ? res.data.message : `请求失败: ${res.statusCode}`
           wx.showToast({
             title: errorMsg,
             icon: 'none'

@@ -1,6 +1,7 @@
 // pages/teacher/home/home.js
 const api = require('../../../utils/api.js')
 const config = require('../../../utils/config.js')
+const util = require('../../../utils/util.js')
 
 Page({
 
@@ -140,8 +141,8 @@ Page({
     const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
     
     const params = {
-      date_from: this.formatDate(weekAgo),
-      date_to: this.formatDate(today),
+      date_from: util.formatDate(weekAgo),
+      date_to: util.formatDate(today),
       page: 1,
       page_size: 100 // 获取所有本周评价用于统计
     }
@@ -172,16 +173,6 @@ Page({
         console.error('加载统计数据失败', err)
         // 失败时保持使用默认数据
       })
-  },
-
-  /**
-   * 格式化日期为 YYYY-MM-DD
-   */
-  formatDate(date) {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
   },
 
   /**

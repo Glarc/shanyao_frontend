@@ -36,7 +36,7 @@ App({
                 this.globalData.userInfo = data.user
                 
                 // 如果用户已选择角色，跳转到对应页面
-                if (data.user.role && data.user.role !== 'parent') {
+                if (data.user.role) {
                   // 根据角色跳转
                   this.redirectByRole(data.user.role)
                 }

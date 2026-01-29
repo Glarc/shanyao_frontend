@@ -1,6 +1,7 @@
 // pages/parent/home/home.js
 const api = require('../../../utils/api.js')
 const config = require('../../../utils/config.js')
+const util = require('../../../utils/util.js')
 
 Page({
 
@@ -125,7 +126,7 @@ Page({
             score: evaluation.score,
             comment: evaluation.content,
             teacher: '老师', // 可以从teacher_id获取
-            time: this.formatTime(evaluation.created_at),
+            time: util.formatTimeOnly(evaluation.created_at),
             tags: this.extractTags(evaluation.content)
           }]
           
@@ -152,8 +153,8 @@ Page({
     const weekAgo = new Date(today.getTime() - 6 * 24 * 60 * 60 * 1000)
     
     const params = {
-      date_from: this.formatDate(weekAgo),
-      date_to: this.formatDate(today)
+      date_from: util.formatDate(weekAgo),
+      date_to: util.formatDate(today)
     }
     
     api.getEvaluationTrend(studentId, params)
@@ -161,7 +162,7 @@ Page({
         if (trend && trend.length > 0) {
           // 转换为前端格式
           const trendData = trend.map(item => ({
-            label: this.formatDateLabel(item.date),
+            label: util.formatDateLabel(item.date),
             score: item.score
           }))
           
@@ -188,7 +189,7 @@ Page({
     if (!studentId) return
     
     // 获取最近几天的照片（这里只获取今天的，实际可以循环多天）
-    const today = this.formatDate(new Date())
+    const today = util.formatDate(new Date())
     
     api.getParentStudentPhotos(studentId, today)
       .then(photos => {
@@ -196,7 +197,7 @@ Page({
           const recentPhotos = photos.map(photo => ({
             id: photo.id,
             url: photo.url,
-            date: this.formatDateShort(photo.photo_date)
+            date: util.formatDateShort(photo.photo_date)
           }))
           
           this.setData({ recentPhotos })
@@ -231,46 +232,6 @@ Page({
     }
     const avg = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
     this.setData({ 'childInfo.weekScore': avg });
-  },
-
-  /**
-   * 格式化时间
-   */
-  formatTime(datetime) {
-    if (!datetime) return ''
-    const date = new Date(datetime)
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
-  },
-
-  /**
-   * 格式化日期为 YYYY-MM-DD
-   */
-  formatDate(date) {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  },
-
-  /**
-   * 格式化日期为短格式 MM-DD
-   */
-  formatDateShort(dateStr) {
-    if (!dateStr) return ''
-    const parts = dateStr.split('-')
-    if (parts.length >= 3) {
-      return `${parts[1]}-${parts[2]}`
-    }
-    return dateStr
-  },
-
-  /**
-   * 格式化日期标签
-   */
-  formatDateLabel(dateStr) {
-    const date = new Date(dateStr)
-    const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
-    return weekdays[date.getDay()]
   },
 
   /**
@@ -321,8 +282,8 @@ Page({
       const monthAgo = new Date(today.getTime() - 29 * 24 * 60 * 60 * 1000)
       
       const params = {
-        date_from: this.formatDate(monthAgo),
-        date_to: this.formatDate(today)
+        date_from: util.formatDate(monthAgo),
+        date_to: util.formatDate(today)
       }
       
       api.getEvaluationTrend(studentId, params)

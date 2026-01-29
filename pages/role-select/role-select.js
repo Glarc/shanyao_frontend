@@ -47,7 +47,10 @@ Page({
         wx.hideLoading()
         console.error('角色选择失败', err)
         // 即使失败也允许跳转（降级处理）
-        wx.setStorageSync(config.storageKeys.role, role)
+        // 修复：应该保存实际的role值，而不是storage key
+        const userInfo = wx.getStorageSync(config.storageKeys.userInfo) || {}
+        userInfo.role = role
+        wx.setStorageSync(config.storageKeys.userInfo, userInfo)
         this.redirectByRole(role)
       })
   },
