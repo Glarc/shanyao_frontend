@@ -1,4 +1,7 @@
 // pages/student/home/home.js
+const api = require('../../../utils/api.js')
+const config = require('../../../utils/config.js')
+
 Page({
 
   /**
@@ -6,29 +9,19 @@ Page({
    */
   data: {
     userInfo: {
-      name: '小明',
+      id: null,
+      name: '加载中...',
       avatar: '',
-      points: 328
+      points: 0
     },
-    todayEvaluation: {
-      course: '数学',
-      score: 95,
-      comment: '今天表现非常出色！能够主动思考问题，积极回答问题，作业完成质量很高。继续保持！',
-      teacher: '张老师',
-      time: '14:30'
-    },
+    todayEvaluation: null,
     stats: [
-      { icon: '📚', label: '课程', value: '12', color: 'purple' },
-      { icon: '⭐', label: '好评', value: '45', color: 'blue' },
-      { icon: '🏆', label: '奖励', value: '8', color: 'pink' },
-      { icon: '📈', label: '排名', value: 'Top 5', color: 'orange' }
+      { icon: '📚', label: '课程', value: '0', color: 'purple' },
+      { icon: '⭐', label: '好评', value: '0', color: 'blue' },
+      { icon: '🏆', label: '奖励', value: '0', color: 'pink' },
+      { icon: '📈', label: '排名', value: '-', color: 'orange' }
     ],
-    recentPhotos: [
-      { url: 'https://via.placeholder.com/200', date: '01-26' },
-      { url: 'https://via.placeholder.com/200', date: '01-25' },
-      { url: 'https://via.placeholder.com/200', date: '01-24' },
-      { url: 'https://via.placeholder.com/200', date: '01-23' }
-    ],
+    recentPhotos: [],
     quickActions: [
       { icon: '📝', label: '我的作业', action: 'homework', color: 'purple' },
       { icon: '📊', label: '成绩单', action: 'report', color: 'blue' },
@@ -42,22 +35,139 @@ Page({
    */
   onLoad(options) {
     this.loadUserData();
-    this.loadTodayEvaluation();
   },
 
   /**
    * 加载用户数据
    */
   loadUserData() {
-    // TODO: 从后端API获取用户信息
-    // wx.request({ url: '...', success: (res) => { ... } })
+    wx.showLoading({ title: '加载中...' })
+    
+    // 获取当前用户信息
+    const userInfo = wx.getStorageSync(config.storageKeys.userInfo)
+    if (userInfo) {
+      this.setData({
+        userInfo: {
+          id: userInfo.id,
+          name: userInfo.name || '学生',
+          avatar: userInfo.avatar_url || '',
+          points: 0 // 积分系统需要后端额外实现
+        }
+      })
+      
+      // 学生角色需要通过家长端API获取数据
+      // 这里使用家长API作为示例，实际应该有学生专用API
+      this.loadTodayEvaluation()
+      this.loadRecentPhotos()
+      
+      wx.hideLoading()
+    } else {
+      // 尝试从后端获取
+      api.getCurrentUser()
+        .then(user => {
+          this.setData({
+            userInfo: {
+              id: user.id,
+              name: user.name || '学生',
+              avatar: user.avatar_url || '',
+              points: 0
+            }
+          })
+          
+          this.loadTodayEvaluation()
+          this.loadRecentPhotos()
+          
+          wx.hideLoading()
+        })
+        .catch(err => {
+          console.error('加载用户信息失败', err)
+          wx.hideLoading()
+        })
+    }
   },
 
   /**
    * 加载今日评价
    */
   loadTodayEvaluation() {
-    // TODO: 从后端API获取今日评价
+    const studentId = this.data.userInfo.id
+    if (!studentId) return
+    
+    // 注意：学生查看自己的评价，这里使用家长API
+    // 实际项目中应该有专门的学生API
+    api.getTodayEvaluation(studentId)
+      .then(evaluation => {
+        if (evaluation) {
+          this.setData({
+            todayEvaluation: {
+              course: '今日评价',
+              score: evaluation.score,
+              comment: evaluation.content,
+              teacher: '老师',
+              time: this.formatTime(evaluation.created_at)
+            }
+          })
+        }
+      })
+      .catch(err => {
+        console.error('加载今日评价失败', err)
+      })
+  },
+
+  /**
+   * 加载最近照片
+   */
+  loadRecentPhotos() {
+    const studentId = this.data.userInfo.id
+    if (!studentId) return
+    
+    const today = this.formatDate(new Date())
+    
+    api.getParentStudentPhotos(studentId, today)
+      .then(photos => {
+        if (photos && photos.length > 0) {
+          const recentPhotos = photos.slice(0, 4).map(photo => ({
+            url: photo.url,
+            date: this.formatDateShort(photo.photo_date)
+          }))
+          
+          this.setData({ recentPhotos })
+        }
+      })
+      .catch(err => {
+        console.error('加载照片失败', err)
+      })
+  },
+
+  /**
+   * 格式化时间
+   */
+  formatTime(datetime) {
+    if (!datetime) return ''
+    const date = new Date(datetime)
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
+  },
+
+  /**
+   * 格式化日期为 YYYY-MM-DD
+   */
+  formatDate(date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  },
+
+  /**
+   * 格式化日期为短格式 MM-DD
+   */
+  formatDateShort(dateStr) {
+    if (!dateStr) return ''
+    const parts = dateStr.split('-')
+    if (parts.length >= 3) {
+      return `${parts[1]}-${parts[2]}`
+    }
+    return dateStr
   },
 
   /**
@@ -142,7 +252,6 @@ Page({
    */
   onPullDownRefresh() {
     this.loadUserData();
-    this.loadTodayEvaluation();
     setTimeout(() => {
       wx.stopPullDownRefresh();
     }, 1000);

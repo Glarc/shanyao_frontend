@@ -1,12 +1,15 @@
+const api = require('../../utils/api.js')
+const config = require('../../utils/config.js')
+
 Page({
   data: {},
 
   onLoad() {
     // 如果已经选过角色，可直接跳转（按你需求决定是否启用）
-    const role = wx.getStorageSync('role');
-    if (role) {
+    const userInfo = wx.getStorageSync(config.storageKeys.userInfo)
+    if (userInfo && userInfo.role) {
       // 如果你希望每次都重新选择，把下面两行删掉即可
-      //this.redirectByRole(role);
+      // this.redirectByRole(userInfo.role);
     }
   },
 
@@ -14,11 +17,39 @@ Page({
     const role = e.currentTarget.dataset.role; // parent | student | teacher
     if (!role) return;
 
-    wx.setStorageSync('role', role);
+    // 显示加载提示
+    wx.showLoading({
+      title: '切换角色中...',
+      mask: true
+    })
 
-    // 这里先直接跳转到对应首页/绑定页
-    // 实际上你后面会在这里插入：手机号绑定 / 学生号关联 / 老师权限校验 等流程
-    this.redirectByRole(role);
+    // 调用后端API选择角色
+    api.selectRole(role)
+      .then(() => {
+        // 更新本地存储
+        const userInfo = wx.getStorageSync(config.storageKeys.userInfo) || {}
+        userInfo.role = role
+        wx.setStorageSync(config.storageKeys.userInfo, userInfo)
+        
+        wx.hideLoading()
+        wx.showToast({
+          title: '角色切换成功',
+          icon: 'success',
+          duration: 1500
+        })
+        
+        // 跳转到对应页面
+        setTimeout(() => {
+          this.redirectByRole(role)
+        }, 1500)
+      })
+      .catch(err => {
+        wx.hideLoading()
+        console.error('角色选择失败', err)
+        // 即使失败也允许跳转（降级处理）
+        wx.setStorageSync(config.storageKeys.role, role)
+        this.redirectByRole(role)
+      })
   },
 
   redirectByRole(role) {

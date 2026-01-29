@@ -1,4 +1,7 @@
 // pages/teacher/home/home.js
+const api = require('../../../utils/api.js')
+const config = require('../../../utils/config.js')
+
 Page({
 
   /**
@@ -13,40 +16,12 @@ Page({
       day: '',
       month: ''
     },
-    todayClasses: [
-      {
-        id: 1,
-        time: '09:00-10:30',
-        name: '三年级数学',
-        room: '教室 302',
-        studentCount: 35,
-        evaluatedCount: 28,
-        evaluated: false
-      },
-      {
-        id: 2,
-        time: '14:00-15:30',
-        name: '四年级数学',
-        room: '教室 405',
-        studentCount: 32,
-        evaluatedCount: 32,
-        evaluated: true
-      },
-      {
-        id: 3,
-        time: '16:00-17:30',
-        name: '五年级数学',
-        room: '教室 501',
-        studentCount: 30,
-        evaluatedCount: 0,
-        evaluated: false
-      }
-    ],
+    todayClasses: [],
     weekStats: [
-      { icon: '📚', label: '授课', value: '15', color: 'blue' },
-      { icon: '✍️', label: '评价', value: '245', color: 'green' },
-      { icon: '📷', label: '照片', value: '67', color: 'orange' },
-      { icon: '⭐', label: '平均分', value: '92', color: 'purple' }
+      { icon: '📚', label: '授课', value: '0', color: 'blue' },
+      { icon: '✍️', label: '评价', value: '0', color: 'green' },
+      { icon: '📷', label: '照片', value: '0', color: 'orange' },
+      { icon: '⭐', label: '平均分', value: '0', color: 'purple' }
     ],
     quickActions: [
       { icon: '✏️', label: '快速评价', desc: '给学生打分评价', action: 'evaluate', color: 'purple' },
@@ -61,6 +36,7 @@ Page({
    */
   onLoad(options) {
     this.initDate();
+    this.loadUserInfo();
     this.loadTodayClasses();
     this.loadWeekStats();
   },
@@ -79,18 +55,133 @@ Page({
   },
 
   /**
+   * 加载用户信息
+   */
+  loadUserInfo() {
+    const userInfo = wx.getStorageSync(config.storageKeys.userInfo)
+    if (userInfo && userInfo.name) {
+      this.setData({
+        'teacherInfo.name': userInfo.name,
+        'teacherInfo.avatar': userInfo.avatar_url || ''
+      })
+    }
+  },
+
+  /**
    * 加载今日课程
    */
   loadTodayClasses() {
-    // TODO: 从后端API获取今日课程
-    // wx.request({ url: '...', success: (res) => { ... } })
+    wx.showLoading({ title: '加载中...' })
+    
+    api.getTeacherClasses()
+      .then(classes => {
+        // 将后端返回的班级数据转换为前端格式
+        // 注意：后端返回的是班级，不是今日课程，这里做一个简单的映射
+        const todayClasses = classes.map((cls, index) => ({
+          id: cls.id,
+          time: this.getClassTime(index), // 模拟课程时间
+          name: cls.name,
+          room: `教室 ${cls.grade}`, // 使用年级作为教室信息
+          studentCount: 0, // 需要单独获取学生数量
+          evaluatedCount: 0, // 需要单独获取评价数量
+          evaluated: false
+        }))
+        
+        this.setData({ todayClasses })
+        
+        // 获取每个班级的学生数量
+        this.loadClassStudentCounts(classes)
+        
+        wx.hideLoading()
+      })
+      .catch(err => {
+        console.error('加载班级列表失败', err)
+        wx.hideLoading()
+        // 失败时保持使用模拟数据，不影响UI展示
+      })
+  },
+
+  /**
+   * 获取课程时间（模拟）
+   */
+  getClassTime(index) {
+    const times = [
+      '09:00-10:30',
+      '14:00-15:30',
+      '16:00-17:30'
+    ]
+    return times[index] || '待定'
+  },
+
+  /**
+   * 加载各班级学生数量
+   */
+  loadClassStudentCounts(classes) {
+    classes.forEach((cls, index) => {
+      api.getClassStudents(cls.id, { page: 1, page_size: 1 })
+        .then(res => {
+          const studentCount = res.total || 0
+          this.setData({
+            [`todayClasses[${index}].studentCount`]: studentCount
+          })
+        })
+        .catch(err => {
+          console.error(`加载班级${cls.id}学生数失败`, err)
+        })
+    })
   },
 
   /**
    * 加载本周统计
    */
   loadWeekStats() {
-    // TODO: 从后端API获取本周统计
+    // 获取本周的评价统计
+    const today = new Date()
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+    
+    const params = {
+      date_from: this.formatDate(weekAgo),
+      date_to: this.formatDate(today),
+      page: 1,
+      page_size: 100 // 获取所有本周评价用于统计
+    }
+    
+    api.getEvaluations(params)
+      .then(res => {
+        const evaluations = res.items || []
+        const totalEvaluations = res.total || 0
+        
+        // 计算平均分
+        let avgScore = 0
+        if (evaluations.length > 0) {
+          const totalScore = evaluations.reduce((sum, ev) => sum + (ev.score || 0), 0)
+          avgScore = Math.round(totalScore / evaluations.length)
+        }
+        
+        // 更新统计数据
+        this.setData({
+          weekStats: [
+            { icon: '📚', label: '授课', value: this.data.todayClasses.length.toString(), color: 'blue' },
+            { icon: '✍️', label: '评价', value: totalEvaluations.toString(), color: 'green' },
+            { icon: '📷', label: '照片', value: '0', color: 'orange' }, // 照片统计需要单独接口
+            { icon: '⭐', label: '平均分', value: avgScore.toString(), color: 'purple' }
+          ]
+        })
+      })
+      .catch(err => {
+        console.error('加载统计数据失败', err)
+        // 失败时保持使用默认数据
+      })
+  },
+
+  /**
+   * 格式化日期为 YYYY-MM-DD
+   */
+  formatDate(date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
   },
 
   /**
@@ -102,6 +193,7 @@ Page({
       title: `前往评价课程 ${classId}`,
       icon: 'none'
     });
+    // TODO: 创建评价页面后取消注释
     // wx.navigateTo({
     //   url: `/pages/teacher/evaluate/evaluate?classId=${classId}`
     // });
@@ -166,6 +258,7 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh() {
+    this.loadUserInfo();
     this.loadTodayClasses();
     this.loadWeekStats();
     setTimeout(() => {
